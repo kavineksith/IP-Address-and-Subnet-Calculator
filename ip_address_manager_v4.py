@@ -72,9 +72,7 @@ class SubnetCalculator:
         try:
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
             usable_hosts = list(network.hosts())
-            ip_range_converter = IPAddressConverter((usable_hosts[0], usable_hosts[-1]))
-            ip_range_str = f"{ip_range_converter.to_decimal_and_hex()[0]} - {ip_range_converter.to_decimal_and_hex()[1]}"
-            return ip_range_str
+            return usable_hosts[0], usable_hosts[-1]
         except ValueError:
             raise ValueError("Invalid IP address or CIDR notation")
 
@@ -133,6 +131,7 @@ class SubnetCalculator:
                     return "Public IPv4"
             else:
                 return "Other IPv4"
+
         except ValueError:
             raise ValueError("Invalid IP address")
 
@@ -177,20 +176,15 @@ def validate_ipv4_class(ip):
         return None
 
 
-def validate_input(ip_version, ip_address, cidr):
+def validate_input(ip_address, cidr):
     try:
-        if not ip_version or ip_version.lower() not in ['ipv4']:
-            raise ValueError("Invalid IP version. Please enter 'IPv4' IP address.")
-
         if not ip_address:
             raise ValueError("Please enter a valid IP address.")
 
         if not validate_ip_address(ip_address):
-            raise ValueError(f"Invalid {ip_version} address format.")
+            raise ValueError(f"Invalid Ipv4 address format.")
 
-        cidr = int(cidr)  # convert cidr string to integer value
-
-        if cidr < 0 or (ip_version == 'ipv4' and cidr > 32):
+        if 0 > int(cidr) > 32:
             raise ValueError("Invalid CIDR notation")
 
         return ip_address, cidr
@@ -200,8 +194,7 @@ def validate_input(ip_version, ip_address, cidr):
 
 
 def chunkstring(string, length):
-    # IPv4 binary representation
-    return (string[0+i:length+i] for i in range(0, len(string), length))
+    return (string[0 + i:length + i] for i in range(0, len(string), length))
 
 
 def main():
@@ -213,7 +206,6 @@ def main():
                 sys.exit(0)
 
             ip_address, cidr = usr_ip_address.strip().split('/')
-            ip_address, cidr = validate_input("ipv4", ip_address, cidr)
 
             ip_class = validate_ipv4_class(ip_address)
 
@@ -230,6 +222,7 @@ def main():
             ip_converter = IPAddressConverter(ip_address)
             decimal_ip, hex_ip = ip_converter.to_decimal_and_hex()
             binary_ip = ip_converter.to_binary()
+
             print(f"IPv4 address: {ip_address}")
             print(f"IPv4 class: {ip_class}")
             print(f"IPv4 Type: {ip_type}")
@@ -238,10 +231,11 @@ def main():
             print(f"Total Number of Hosts: {total_hosts}")
             print(f"Number of Usable Hosts: {usable_hosts}")
             print(f"CIDR Notation: /{cidr_notation}")
-            print(f"Usable Host IP Range: {usable_host_range}")
+            print(f"Usable Host IP Range: {usable_host_range}\n")
+            
             print(f"Decimal representation: {decimal_ip}")
             print(f"Hexadecimal representation: {hex_ip}")
-            print(f"Binary representation: {'.'.join(chunkstring(binary_ip[0:], 8))}")
+            print(f"Binary representation: {'.'.join(chunkstring(binary_ip[0:], 8))}\n")
 
             subnet_calculator = SubnetCalculator(ip_address, cidr)
             subnet, subnet_mask = subnet_calculator.calculate_subnet()
@@ -249,14 +243,16 @@ def main():
             subnet_mask_bin = subnet_calculator.subnet_mask_binary()
             subnet_bin = subnet_calculator.subnet_binary()
             host_mask_bin = subnet_calculator.host_mask_binary()
+
             print(f"Subnet: {subnet}/{cidr}")
             print(f"Subnet mask: {subnet_mask}")
-            print(f"Host mask: {host_mask}")
+            print(f"Host mask: {host_mask}\n")
+
             print(f"Subnet binary: {'.'.join(chunkstring(subnet_bin[0:], 8))}")
             print(f"Subnet mask binary: {'.'.join(chunkstring(subnet_mask_bin[2:], 8))}")
-            print(f"Host mask binary: {'.'.join(chunkstring(host_mask_bin, 8))}")
-        except ValueError:
-            print("Invalid input. Please enter a valid IPv4 address followed by CIDR notation (e.g., 192.168.1.1/24).")
+            print(f"Host mask binary: {'.'.join(chunkstring(host_mask_bin, 8))}\n")
+        except ValueError as ve:
+            print(ve)
         except KeyboardInterrupt:
             print("\nProcess interrupted by the user.")
             sys.exit(1)
