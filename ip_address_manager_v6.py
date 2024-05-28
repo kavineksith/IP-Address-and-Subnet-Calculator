@@ -72,7 +72,6 @@ class SubnetCalculator:
         except ValueError:
             raise ValueError("Invalid IP address or CIDR notation")
 
-
     def usable_host_ip_range(self):
         try:
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
@@ -90,14 +89,14 @@ class SubnetCalculator:
             return network.broadcast_address
         except ValueError:
             raise ValueError("Invalid IP address or CIDR notation")
-    
+
     def total_number_of_hosts(self):
         try:
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
             return network.num_addresses
         except ValueError:
             raise ValueError("Invalid IP address or CIDR notation")
-    
+
     def number_of_usable_hosts(self):
         try:
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
@@ -108,7 +107,7 @@ class SubnetCalculator:
                 return check_host_count
         except ValueError:
             raise ValueError("Invalid IP address or CIDR notation")
-    
+
     def network_address(self):
         try:
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
@@ -150,6 +149,7 @@ class SubnetCalculator:
         except ValueError:
             raise ValueError("Invalid IP address")
 
+
 def chunkstring(string, length, delimiter=':'):
     if delimiter in string:
         # IPv6 binary representation with delimiters
@@ -160,10 +160,13 @@ def chunkstring(string, length, delimiter=':'):
         chunks = [string[i:i + length] for i in range(0, len(string), length)]
         return '.'.join(chunks)
 
+
 def main():
     while True:
         try:
-            ip_address, cidr = input("Enter IPv6 address and CIDR notation (e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334/64): ").strip().split('/')
+            ip_address, cidr = input(
+                "Enter IPv6 address and CIDR notation (e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334/64): ").strip().split(
+                '/')
             subnet_calculator = SubnetCalculator(ip_address, int(cidr))
 
             ip_type = subnet_calculator.ip_type()
@@ -204,7 +207,7 @@ def main():
             print(f"Subnet: {subnet}/{cidr}")
             print(f"Subnet mask: {subnet_mask}")
             print(f"Host mask: {host_mask}\n")
-            
+
             print(f"Subnet binary: {chunkstring(subnet_bin, 8)}")
             print(f"Subnet mask binary: {chunkstring(subnet_mask_bin, 8)}")
             print(f"Host mask binary: {chunkstring(host_mask_bin, 8)}\n")
@@ -223,6 +226,7 @@ def main():
             sys.exit(1)
         except Exception as e:
             print(f"An error occurred: {e}")
+
 
 if __name__ == "__main__":
     main()
