@@ -276,8 +276,8 @@ def main():
             print(f"Subnet binary: {'.'.join(chunkstring(subnet_bin[0:], 8))}")
             print(f"Subnet mask binary: {'.'.join(chunkstring(subnet_mask_bin[2:], 8))}")
             print(f"Host mask binary: {'.'.join(chunkstring(host_mask_bin, 8))}")
-        # except ValueError:
-        #     print("Invalid input. Please enter a valid IPv4 address followed by CIDR notation (e.g., 192.168.1.1/24).")
+        except ValueError:
+            print("Invalid input. Please enter a valid IPv4 address followed by CIDR notation (e.g., 192.168.1.1/24).")
         except KeyboardInterrupt:
             print("\nProcess interrupted by the user.")
             sys.exit(1)
