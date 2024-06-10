@@ -164,10 +164,13 @@ def chunkstring(string, length, delimiter=':'):
 def main():
     while True:
         try:
-            ip_address, cidr = input(
-                "Enter IPv6 address and CIDR notation (e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334/64): ").strip().split(
-                '/')
-            subnet_calculator = SubnetCalculator(ip_address, int(cidr))
+            usr_ip_address = input("Enter IPv6 address and CIDR notation (e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334/64): ")
+            if usr_ip_address.lower() == 'exit':
+                print("Exiting the program.")
+                sys.exit(0)
+            
+            given_ip_address, given_cidr = usr_ip_address.strip().split('/')
+            subnet_calculator = SubnetCalculator(given_ip_address, int(given_cidr))
 
             ip_type = subnet_calculator.ip_type()
             network_address = subnet_calculator.network_address()
@@ -178,10 +181,10 @@ def main():
             usable_host_range_start, usable_host_range_end = subnet_calculator.usable_host_ip_range()
             usable_host_range_str = f"{usable_host_range_start} - {usable_host_range_end}" if usable_host_range_start and usable_host_range_end else "N/A"
 
-            ip_converter = IPAddressConverter(ip_address)
+            ip_converter = IPAddressConverter(given_ip_address)
             binary_ip = ip_converter.to_binary()
             decimal_ip = ip_converter.to_decimal()
-            print(f"IPv6 address: {ip_address}")
+            print(f"IPv6 address: {given_ip_address}")
             print(f"IP Type: {ip_type}")
             print(f"Network Address: {network_address}")
             print(f"Broadcast Address: {broadcast_address}")
@@ -192,7 +195,7 @@ def main():
             print(f"IP address hexadecimal representation: {binary_ip}")
             print(f"IP address decimal representation: {decimal_ip}")
 
-            subnet_calculator = SubnetCalculator(ip_address, cidr)
+            # subnet_calculator = SubnetCalculator(given_ip_address, int(given_cidr))
             subnet, subnet_mask = subnet_calculator.calculate_subnet()
             subnet_mask_bin = subnet_calculator.subnet_mask_binary()
             subnet_bin = subnet_calculator.subnet_binary()
@@ -204,7 +207,7 @@ def main():
             subnet_mask_hex = subnet_mask.exploded
             host_mask_hex = ipaddress.IPv6Address(int(host_mask_bin, 2)).exploded
 
-            print(f"Subnet: {subnet}/{cidr}")
+            print(f"Subnet: {subnet}/{given_cidr}")
             print(f"Subnet mask: {subnet_mask}")
             print(f"Host mask: {host_mask}\n")
 
