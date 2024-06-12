@@ -1,4 +1,4 @@
-## Comprehensive Documentation for IP Subnet Calculator
+## Documentation: IP Address and Subnet Calculator 
 
 ### Introduction
 The IP Subnet Calculator is a Python script designed to perform various calculations and analyses related to IPv4 and IPv6 addresses and subnets. It provides functionalities to convert IP addresses between different representations (decimal, hexadecimal, binary), calculate subnet details, determine IP address types, validate IP addresses, classify IPv4 addresses into classes, and more. Additionally, it offers the flexibility to output results in either terminal display, CSV files, or JSON format.
