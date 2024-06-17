@@ -33,7 +33,6 @@ class SubnetCalculator:
 
     def calculate_subnet(self):
         try:
-            #print("Calculating subnet...")
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
             return network.network_address, network.netmask
         except ValueError as ve:
@@ -42,7 +41,6 @@ class SubnetCalculator:
 
     def subnet_mask_binary(self):
         try:
-            #print("Calculating subnet mask binary...")
             subnet_mask = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False).netmask
             return bin(int(subnet_mask))
         except ValueError as ve:
@@ -51,7 +49,6 @@ class SubnetCalculator:
 
     def host_mask_calculator(self):
         try:
-            #print("Calculating host mask...")
             host_mask = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False).hostmask
             return host_mask
         except ValueError as ve:
@@ -60,7 +57,6 @@ class SubnetCalculator:
 
     def host_mask_binary(self):
         try:
-            #print("Calculating host mask binary...")
             host_mask = self.host_mask_calculator()
             # Determine IP version
             ip_version = ipaddress.ip_address(self.ip).version
@@ -75,7 +71,6 @@ class SubnetCalculator:
 
     def subnet_binary(self):
         try:
-            #print("Calculating subnet binary...")
             subnet = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False).network_address
             return format(int(subnet), '032b')
         except ValueError as ve:
@@ -84,7 +79,6 @@ class SubnetCalculator:
 
     def usable_host_ip_range(self):
         try:
-            #print("Calculating usable host IP range...")
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
             usable_hosts = list(network.hosts())
             first_host, last_host = usable_hosts[0], usable_hosts[-1]
@@ -97,7 +91,6 @@ class SubnetCalculator:
 
     def broadcast_address(self):
         try:
-            #print("Calculating broadcast address...")
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
             return network.broadcast_address
         except ValueError as ve:
@@ -106,7 +99,6 @@ class SubnetCalculator:
 
     def total_number_of_hosts(self):
         try:
-            #print("Calculating total number of hosts...")
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
             return network.num_addresses
         except ValueError as ve:
@@ -115,7 +107,6 @@ class SubnetCalculator:
 
     def number_of_usable_hosts(self):
         try:
-            #print("Calculating number of usable hosts...")
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
             check_host_count = network.num_addresses - 2
             if check_host_count <= 0:
@@ -123,12 +114,11 @@ class SubnetCalculator:
             else:
                 return check_host_count
         except ValueError as ve:
-            #print(f"Error in number_of_usable_hosts: {ve}")
+            print(f"Error in number_of_usable_hosts: {ve}")
             raise ValueError("Invalid IP address or CIDR notation")
 
     def network_address(self):
         try:
-            #print("Calculating network address...")
             network = ipaddress.ip_network(self.ip + '/' + str(self.cidr), strict=False)
             return network.network_address
         except ValueError as ve:
@@ -226,14 +216,36 @@ def validate_input(ip_version, ip_address, cidr):
 
 def chunkstring(string, length):
     # IPv4 binary representation
-    return (string[0+i:length+i] for i in range(0, len(string), length))
+    return (string[0 + i:length + i] for i in range(0, len(string), length))
+
+
+def create_directory_and_generate_file_path(base_directory, file_name):
+    """
+    Creates a directory if it doesn't already exist and generates a file path.
+
+    Args:
+    - base_directory (str): Base directory path where the directory will be created and the file path will be generated.
+    - file_name (str): Name of the file (including extension).
+
+    Returns:
+    - str: Full file path.
+    """
+    # Create directory if it doesn't exist
+    directory_path = Path(base_directory)
+    directory_path.mkdir(parents=True, exist_ok=True)
+
+    # Generate file path
+    file_path = directory_path / file_name
+
+    return str(file_path)
+
 
 def result_to_csv(labels, data, save_path):
     try:
         # Ensure both labels and data have the same length
         if len(labels) != len(data):
             raise ValueError("Lengths of labels and data do not match.")
-        
+
         # Specify the filename where you want to save the JSON data
         filename = Path(save_path)
 
@@ -248,13 +260,15 @@ def result_to_csv(labels, data, save_path):
             # Open the file in append mode
             with open(filename, 'a', newline='') as csvfile:
                 csvwriter = csv.writer(csvfile)
-                    
+
                 # If the first line doesn't exist, write the header
                 if not first_line:
                     csvwriter.writerow(labels)
 
                 # Write data row
                 csvwriter.writerow([str(item) for item in data])
+
+        print("CSV data has been saved to", filename)
     except ValueError as ve:
         print(ve)
     except FileNotFoundError:
@@ -270,12 +284,13 @@ def result_to_csv(labels, data, save_path):
         print("Error uploading data:", e)
         sys.exit(1)
 
+
 def result_to_json(labels, data, save_path):
     try:
         # Ensure both labels and data have the same length
         if len(labels) != len(data):
             raise ValueError("Lengths of labels and data do not match.")
-        
+
         # Create a dictionary pairing labels with data
         json_data = {label: value for label, value in zip(labels, data)}
 
@@ -311,12 +326,13 @@ def result_to_json(labels, data, save_path):
         print("Error uploading data:", e)
         sys.exit(1)
 
+
 def result_to_display(labels, data):
     try:
         # Ensure both labels and data have the same length
         if len(labels) != len(data):
             raise ValueError("Lengths of labels and data do not match.")
-        
+
         # Loop through each label and its corresponding data value
         for label, value in zip(labels, data):
             print(f"{label}: {value}")
@@ -327,6 +343,7 @@ def result_to_display(labels, data):
         sys.exit(1)
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 def data_process(usr_ip_address, output_selection=1, save_path=None):
     try:
@@ -431,13 +448,19 @@ def main():
                     try:
                         output_selection = int(input("Select a method (2 for CSV, 3 for JSON): "))
                         if output_selection in [2, 3]:
-                            save_path = Path(input("Enter the file location: "))
+                            # User input for base directory and file name
+                            base_directory = input("Enter base directory path: ").strip()
+                            file_name = input("Enter file name (including extension): ").strip()
+
+                            # Generate file path and create directory if necessary
+                            file_path = create_directory_and_generate_file_path(base_directory, file_name)
+                            print(f"Generated file path: {file_path}")
                         else:
                             print("Invalid selection. Please enter a number between 2 and 3.")
                             sys.exit(1)
                         with open(file_location, 'r', encoding='utf-8') as ip_list:
                             for item in ip_list:
-                                data_process(item, output_selection, save_path)
+                                data_process(item, output_selection, file_path)
                     except PermissionError:
                         print("Permission denied to access the source or export file.")
                         sys.exit(1)
@@ -456,7 +479,7 @@ def main():
             sys.exit(1)
         except Exception as e:
             print(f"An error occurred: {e}")
-            
+
 
 if __name__ == "__main__":
     main()
